@@ -435,11 +435,17 @@ fun JourneyTabScreen(
         isCustomTabSelected = state.isCustomRoute
     }
 
+    LaunchedEffect(Unit) {
+        if (state.customFromStation.isBlank() && state.customToStation.isBlank()) {
+            viewModel.selectCustomJourney("Colombo Fort", "Kandy", customServiceClass)
+        }
+    }
+
     LaunchedEffect(state.customFromStation, state.customToStation) {
-        if (state.customFromStation.isNotBlank()) {
+        if (state.customFromStation.isNotBlank() && state.customFromStation != fromText) {
             fromText = state.customFromStation
         }
-        if (state.customToStation.isNotBlank()) {
+        if (state.customToStation.isNotBlank() && state.customToStation != toText) {
             toText = state.customToStation
         }
     }
