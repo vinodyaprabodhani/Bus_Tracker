@@ -157,7 +157,7 @@ fun PassengerAppContent(viewModel: JourneyViewModel) {
                         // Sleek Header Information
                         Column {
                             Text(
-                                text = if (isSinhala) "ලං.ග.ම. Smart Go" else "SLTB Smart Go",
+                                text = if (isSinhala) "ලංකා Bus Go" else "Lanka Bus Go",
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF9E1C1C),
                                 fontSize = (15 * textScale).sp,
@@ -661,7 +661,46 @@ fun JourneyTabScreen(
                                     fontSize = (10 * textScale).sp
                                 )
 
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                // Dynamic preset path selector pills
+                                androidx.compose.foundation.lazy.LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
+                                ) {
+                                    val presets = listOf(
+                                        Pair("Colombo Fort", "Kandy"),
+                                        Pair("Maharagama", "Galle"),
+                                        Pair("Colombo Fort", "Horana"),
+                                        Pair("Pettah", "Maharagama"),
+                                        Pair("Colombo Fort", "Negombo"),
+                                        Pair("Kandy", "Galle")
+                                    )
+                                    items(presets) { preset ->
+                                        val label = if (isSinhala) {
+                                            "${viewModel.getSinhalaNameForPlace(preset.first)} ⇄ ${viewModel.getSinhalaNameForPlace(preset.second)}"
+                                        } else {
+                                            "${preset.first} ⇄ ${preset.second}"
+                                        }
+                                        AssistChip(
+                                            onClick = {
+                                                if (state.status != JourneyStatus.Tracking) {
+                                                    fromText = preset.first
+                                                    toText = preset.second
+                                                    viewModel.selectCustomJourney(preset.first, preset.second, customServiceClass)
+                                                }
+                                            },
+                                            label = { Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                                            colors = AssistChipDefaults.assistChipColors(
+                                                containerColor = Color(0xFFEFF6FF),
+                                                labelColor = Color(0xFF1E40AF)
+                                            ),
+                                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE))
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(4.dp))
 
                                 // From Place Field
                                 OutlinedTextField(
@@ -1289,6 +1328,127 @@ fun JourneyTabScreen(
             }
         }
 
+        // COMMUTER ENGAGEMENT HELPER & CHECKLIST PANEL (Shows only during Tracking)
+        if (state.status == JourneyStatus.Tracking) {
+            item {
+                val checklistItemsEn = listOf(
+                    "Receive transit ticket from conductor",
+                    "Keep your smart card tapped in",
+                    "Keep hand luggage safely stored",
+                    "Prepare to exit as destination nears"
+                )
+                val checklistItemsSi = listOf(
+                    "කොන්දොස්තර මහතාගෙන් ටිකට් පත ලබාගන්න",
+                    "ස්මාර්ට් කාඩ්පත නිසි පරිදි ළඟ තබාගන්න",
+                    "අත් බෑගය ආරක්ෂිතව තබාගන්න",
+                    "ගමනාන්තය ආසන්න වන විට බැසීමට සූදානම් වන්න"
+                )
+                
+                val checkedStates = remember { mutableStateMapOf<Int, Boolean>() }
+                val completedCount = checkedStates.values.count { it }
+                val totalChecked = checklistItemsEn.size
+                
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, Color(0xFFFDE68A), RoundedCornerShape(18.dp))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FactCheck,
+                                contentDescription = "Checklist",
+                                tint = Color(0xFFD97706),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = if (isSinhala) "ගමන් මඟ පිරික්සුම් සහය" else "COMMUTER TRAVEL COMPANION",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFFB45309),
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 1.sp,
+                                fontSize = (10 * textScale).sp
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(6.dp))
+                        
+                        Text(
+                            text = if (isSinhala) "ආරක්ෂිත සහ සුවපහසු ගමනක් සඳහා මෙම පියවර අනුගමනය කරන්න." else "Make sure to complete these checklist items for a safe, standard ride.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF78350F),
+                            fontSize = (11 * textScale).sp
+                        )
+                        
+                        Spacer(modifier = Modifier.height(10.dp))
+                        
+                        // Linear Progress Bar for Checklist
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            LinearProgressIndicator(
+                                progress = { completedCount.toFloat() / totalChecked },
+                                modifier = Modifier.weight(1f).height(6.dp).clip(CircleShape),
+                                color = Color(0xFFD97706),
+                                trackColor = Color(0xFFFEF3C7)
+                            )
+                            Text(
+                                text = "$completedCount/$totalChecked",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFB45309),
+                                fontSize = 11.sp
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            for (index in 0 until totalChecked) {
+                                val isChecked = checkedStates[index] ?: false
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable { checkedStates[index] = !isChecked }
+                                        .background(if (isChecked) Color(0xFFFEF3C7) else Color.Transparent)
+                                        .padding(vertical = 4.dp, horizontal = 6.dp)
+                                ) {
+                                    Checkbox(
+                                        checked = isChecked,
+                                        onCheckedChange = { checkedStates[index] = it },
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = Color(0xFFD97706),
+                                            checkmarkColor = Color.White,
+                                            uncheckedColor = Color(0xFFFBBF24)
+                                        ),
+                                        modifier = Modifier.size(32.dp).testTag("checklist_item_$index")
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = if (isSinhala) checklistItemsSi[index] else checklistItemsEn[index],
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if (isChecked) Color(0xFF78350F) else Color(0xFF451A03),
+                                        fontWeight = if (isChecked) FontWeight.Bold else FontWeight.Medium,
+                                        fontSize = (12 * textScale).sp,
+                                        textDecoration = if (isChecked) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // 6. DETAILED PROGRESS STEPS (Shows stops on route, matching check marks if passed)
         if (state.activeRoute != null && state.activeRoute.stops.isNotEmpty()) {
             item {
@@ -1831,6 +1991,208 @@ fun FareGuideTabScreen(
         }
 
         item {
+            var selectedType by remember { mutableStateOf("Normal") }
+            var tripKm by remember { mutableFloatStateOf(10f) }
+            
+            val base = if (selectedType == "Semi-Luxury") 45.0 else if (selectedType == "AC-Expressway") 120.0 else 30.0
+            val rate = if (selectedType == "Semi-Luxury") 14.0 else if (selectedType == "AC-Expressway") 22.0 else 9.5
+            
+            val fareVal = if (tripKm <= 2.0) {
+                base
+            } else {
+                val excess = tripKm - 2.0
+                val raw = base + (excess * rate)
+                Math.round(raw * 1.0).toDouble()
+            }
+            
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(18.dp))
+                    .testTag("interactive_fare_calculator_card")
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Calculate,
+                            contentDescription = "Calculator",
+                            tint = Color(0xFF2563EB),
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Text(
+                            text = if (isSinhala) "ක්‍රියාකාරී ගාස්තු කැල්කියුලේටරය" else "FARE ESTIMATOR INTEGRATOR",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFF2563EB),
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 1.sp,
+                            fontSize = (10 * textScale).sp
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(10.dp))
+                    
+                    Text(
+                        text = if (isSinhala) "ඕනෑම දුරක් සඳහා ආසන්න ප්‍රවේශපත්‍ර මිල ගණනය කර බලන්න." else "Check instant regulatory bus fare estimates for any custom Ceylon distance.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF64748B),
+                        fontSize = (11 * textScale).sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(14.dp))
+                    
+                    // Service Type Buttons Segment selector
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFFF1F5F9))
+                            .padding(2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        listOf("Normal", "Semi-Luxury", "AC-Expressway").forEach { mode ->
+                            val isSel = selectedType == mode
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(if (isSel) Color(0xFF001D35) else Color.Transparent)
+                                    .clickable { selectedType = mode }
+                                    .padding(vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (isSinhala) translateCategory(mode, true) else mode,
+                                    color = if (isSel) Color.White else Color(0xFF64748B),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Slider Row showing distance selected
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (isSinhala) "ගමන් දුර ප්‍රමාණය: ${Math.round(tripKm).toInt()} km" else "Est. Distance: ${Math.round(tripKm).toInt()} km",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A),
+                            fontSize = (12 * textScale).sp
+                        )
+                        Text(
+                            text = "Rate: Rs.${rate}/km",
+                            color = Color(0xFF2563EB),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 11.sp
+                        )
+                    }
+                    
+                    Slider(
+                        value = tripKm,
+                        onValueChange = { tripKm = it },
+                        valueRange = 1.0f..120.0f,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color(0xFF9E1C1C),
+                            activeTrackColor = Color(0xFF9E1C1C),
+                            inactiveTrackColor = Color(0xFFE2E8F0)
+                        ),
+                        modifier = Modifier.testTag("calculator_distance_slider")
+                    )
+                    
+                    Spacer(modifier = Modifier.height(14.dp))
+                    
+                    // Receipt Styled Box
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, Color(0xFFFDE68A), RoundedCornerShape(12.dp))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(14.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "NTC OFFICIAL TICKETING REFERENCE",
+                                fontWeight = FontWeight.Black,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFFB45309),
+                                letterSpacing = 1.sp
+                            )
+                            
+                            Spacer(modifier = Modifier.height(4.dp))
+                            
+                            Text(
+                                text = "Ceylon Transport Services Board",
+                                fontSize = 10.sp,
+                                color = Color(0xFFD97706)
+                            )
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            // Ticket visual divider
+                            Text(
+                                text = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+                                color = Color(0xFFFBBF24),
+                                maxLines = 1,
+                                overflow = TextOverflow.Clip
+                            )
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "${if (isSinhala) translateCategory(selectedType, true) else selectedType} Service",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF78350F)
+                                    )
+                                    Text(
+                                        text = "Base Fare: LKR ${base.toInt()}",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF9A3412)
+                                    )
+                                }
+                                
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = "ESTIMATED PRICE",
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFB45309)
+                                    )
+                                    Text(
+                                        text = "Rs. ${fareVal.toInt()}.00",
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 24.sp,
+                                        color = Color(0xFF78350F),
+                                        modifier = Modifier.testTag("calculator_estimated_price")
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
             Text(
                 text = if (isSinhala) "සාමාන්‍ය බස් ගාස්තු පියවර සටහන" else "OFFICIAL STAGE DISTANCE CHART",
                 style = MaterialTheme.typography.labelSmall,
@@ -1901,6 +2263,120 @@ fun FareGuideTabScreen(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         fontSize = (12 * textScale).sp
                     )
+                }
+            }
+        }
+
+        item {
+            val context = LocalContext.current
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+                    .border(
+                        1.dp,
+                        Color(0xFFFCA5A5),
+                        RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Campaign,
+                            contentDescription = "Megaphone",
+                            tint = Color(0xFFDC2626),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = if (isSinhala) "මහජන සහන හා හදිසි ඇමතුම්" else "EMERGENCY CEYLON HELPLINES",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF991B1B),
+                            fontSize = (12 * textScale).sp
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(6.dp))
+                    
+                    Text(
+                        text = if (isSinhala) {
+                            "බස් රථ ගමන්වාරයේදී සිදුවන ඕනෑම කරදරයකට, අසාධාරණයකට හෝ හදිසි අවස්ථාවකදී පහත අංක අමතා ක්ෂණික සහය ලබාගන්න."
+                        } else {
+                            "In case of ticket queries, conductor disputes, lost items, or security concerns, use these official helplines."
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF7F1D1D),
+                        fontSize = (11 * textScale).sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(14.dp))
+                    
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        val helplines = listOf(
+                            Triple("1955", if (isSinhala) "ජාතික ප්‍රවාහන කොමිසම (NTC)" else "National Transport Comm. (NTC)", Icons.Default.SupportAgent),
+                            Triple("119", if (isSinhala) "පොලිස් හදිසි ඇමතුම් සේවාව" else "Police Emergency Services", Icons.Default.Shield),
+                            Triple("0112581120", if (isSinhala) "ලං.ග.ම. සාමාන්‍ය විමසීම් • පැමිණිලි" else "SLTB Main Complaints Branch", Icons.Default.PhoneInTalk)
+                        )
+                        
+                        helplines.forEach { helpline ->
+                            Button(
+                                onClick = {
+                                    Toast.makeText(
+                                        context,
+                                        if (isSinhala) "ඇමතුම සම්බන්ධ කරමින්: ${helpline.first}..." else "Dialing hotline: ${helpline.first} (Simulated)...",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                    contentColor = Color(0xFF991B1B)
+                                ),
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(44.dp)
+                                    .border(1.dp, Color(0xFFFCA5A5), RoundedCornerShape(10.dp)),
+                                contentPadding = PaddingValues(horizontal = 12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(helpline.third, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Text(
+                                            text = helpline.second,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 11.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                    
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = helpline.first,
+                                            fontWeight = FontWeight.Black,
+                                            fontSize = 12.sp,
+                                            color = Color(0xFFDC2626)
+                                        )
+                                        Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFFDC2626))
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

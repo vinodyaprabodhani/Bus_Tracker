@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SLTB Smart Go</string>
+    <string name="app_name">Lanka Bus Go</string>
     <string name="nav_journey">Journey</string>
     <string name="nav_history">History</string>
     <string name="nav_guide">Fare Guide</string>
