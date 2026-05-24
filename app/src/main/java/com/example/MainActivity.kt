@@ -708,7 +708,6 @@ fun JourneyTabScreen(
                                     onValueChange = {
                                         if (state.status != JourneyStatus.Tracking) {
                                             fromText = it
-                                            viewModel.selectCustomJourney(fromText, toText, customServiceClass)
                                         }
                                     },
                                     label = { Text(if (isSinhala) "ආරම්භක පර්යන්තය (FROM)" else "From Station / Town") },
@@ -719,8 +718,52 @@ fun JourneyTabScreen(
                                         .testTag("custom_from_input"),
                                     enabled = state.status != JourneyStatus.Tracking,
                                     singleLine = true,
-                                    shape = RoundedCornerShape(12.dp)
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = Color(0xFF0F172A),
+                                        unfocusedTextColor = Color(0xFF0F172A),
+                                        focusedContainerColor = Color.White,
+                                        unfocusedContainerColor = Color.White,
+                                        focusedBorderColor = Color(0xFF9E1C1C),
+                                        unfocusedBorderColor = Color(0xFFCBD5E1),
+                                        focusedLabelColor = Color(0xFF9E1C1C),
+                                        unfocusedLabelColor = Color(0xFF64748B)
+                                    )
                                 )
+
+                                // From Autocomplete Suggestions
+                                val fromClean = fromText.trim()
+                                if (fromClean.isNotEmpty() && !viewModel.knownStations.any { it.first.equals(fromClean, ignoreCase = true) }) {
+                                    val matches = viewModel.knownStations.filter {
+                                        it.first.contains(fromClean, ignoreCase = true)
+                                    }.take(4)
+                                    if (matches.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        androidx.compose.foundation.lazy.LazyRow(
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
+                                        ) {
+                                            items(matches) { match ->
+                                                val displayName = if (isSinhala) {
+                                                    viewModel.getSinhalaNameForPlace(match.first)
+                                                } else {
+                                                    match.first
+                                                }
+                                                AssistChip(
+                                                    onClick = {
+                                                        fromText = match.first
+                                                    },
+                                                    label = { Text(displayName, fontSize = 10.sp, fontWeight = FontWeight.Bold) },
+                                                    colors = AssistChipDefaults.assistChipColors(
+                                                        containerColor = Color(0xFFF1F5F9),
+                                                        labelColor = Color(0xFF1E293B)
+                                                    ),
+                                                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
 
                                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -730,7 +773,6 @@ fun JourneyTabScreen(
                                     onValueChange = {
                                         if (state.status != JourneyStatus.Tracking) {
                                             toText = it
-                                            viewModel.selectCustomJourney(fromText, toText, customServiceClass)
                                         }
                                     },
                                     label = { Text(if (isSinhala) "ගමනාන්තය (TO)" else "To Destination City") },
@@ -741,8 +783,52 @@ fun JourneyTabScreen(
                                         .testTag("custom_to_input"),
                                     enabled = state.status != JourneyStatus.Tracking,
                                     singleLine = true,
-                                    shape = RoundedCornerShape(12.dp)
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = Color(0xFF0F172A),
+                                        unfocusedTextColor = Color(0xFF0F172A),
+                                        focusedContainerColor = Color.White,
+                                        unfocusedContainerColor = Color.White,
+                                        focusedBorderColor = Color(0xFF9E1C1C),
+                                        unfocusedBorderColor = Color(0xFFCBD5E1),
+                                        focusedLabelColor = Color(0xFF9E1C1C),
+                                        unfocusedLabelColor = Color(0xFF64748B)
+                                    )
                                 )
+
+                                // To Autocomplete Suggestions
+                                val toClean = toText.trim()
+                                if (toClean.isNotEmpty() && !viewModel.knownStations.any { it.first.equals(toClean, ignoreCase = true) }) {
+                                    val matches = viewModel.knownStations.filter {
+                                        it.first.contains(toClean, ignoreCase = true)
+                                    }.take(4)
+                                    if (matches.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        androidx.compose.foundation.lazy.LazyRow(
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
+                                        ) {
+                                            items(matches) { match ->
+                                                val displayName = if (isSinhala) {
+                                                    viewModel.getSinhalaNameForPlace(match.first)
+                                                } else {
+                                                    match.first
+                                                }
+                                                AssistChip(
+                                                    onClick = {
+                                                        toText = match.first
+                                                    },
+                                                    label = { Text(displayName, fontSize = 10.sp, fontWeight = FontWeight.Bold) },
+                                                    colors = AssistChipDefaults.assistChipColors(
+                                                        containerColor = Color(0xFFF1F5F9),
+                                                        labelColor = Color(0xFF1E293B)
+                                                    ),
+                                                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -799,11 +885,48 @@ fun JourneyTabScreen(
                                                 },
                                                 onClick = {
                                                     customServiceClass = mode
-                                                    viewModel.selectCustomJourney(fromText, toText, customServiceClass)
                                                     showCategoryMenu = false
                                                 }
                                             )
                                         }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                // SEARCH & PLAN CUSTOM ROUTE BUTTON (Solid Iconic Ceylon Red)
+                                Button(
+                                    onClick = {
+                                        if (state.status != JourneyStatus.Tracking) {
+                                            viewModel.selectCustomJourney(fromText, toText, customServiceClass)
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .testTag("submit_custom_search_btn"),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFD32F2F),
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(12.dp),
+                                    enabled = fromText.isNotBlank() && toText.isNotBlank()
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Search,
+                                            contentDescription = "Search and Plan Journey",
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Text(
+                                            text = if (isSinhala) "මාර්ගය සැලසුම් කරන්න" else "SEARCH & PLAN ROUTE",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp,
+                                            letterSpacing = 0.5.sp
+                                        )
                                     }
                                 }
                             }
@@ -1424,7 +1547,7 @@ fun JourneyTabScreen(
                                 ) {
                                     Checkbox(
                                         checked = isChecked,
-                                        onCheckedChange = { checkedStates[index] = it },
+                                        onCheckedChange = null,
                                         colors = CheckboxDefaults.colors(
                                             checkedColor = Color(0xFFD97706),
                                             checkmarkColor = Color.White,
