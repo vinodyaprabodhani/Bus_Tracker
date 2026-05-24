@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Bus Body Base -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,28 H76 C80,28 82,30 82,34 V74 C82,78 80,80 76,80 H32 C28,80 26,78 26,74 V34 C26,30 28,28 32,28 Z" />
+    <!-- Windshield glass (Dark Navy contrast) -->
+    <path
+        android:fillColor="#001D35"
+        android:pathData="M30,34 H78 V52 H30 Z" />
+    <!-- Center windshield driver partition line -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M53,34 H55 V52 H53 Z" />
+    <!-- Wheels extending slightly below body -->
+    <path
+        android:fillColor="#1E293B"
+        android:pathData="M32,80 H40 V85 H32 Z M68,80 H76 V85 H68 Z" />
+    <!-- Front glowing headlights (Bright light-blue/cyan) -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M33,70 A4,4 0 1,1 33.01,70 Z M75,70 A4,4 0 1,1 75.01,70 Z" />
+    <!-- Glowing Route Destination board display panel at very top -->
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M42,21 H66 C68,21 68,23 68,26 H40 C40,23 40,21 42,21 Z" />
+    <!-- Destination text light-dot element -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,22 H64 V24 H44 Z" />
+    <!-- Grille/Bumper lines below windshield -->
+    <path
+        android:fillColor="#64748B"
+        android:pathData="M38,62 H70 V64 H38 Z M42,66 H66 V67 H42 Z" />
+</vector>

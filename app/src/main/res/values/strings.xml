@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">SLTB Smart Go</string>
+    <string name="nav_journey">Journey</string>
+    <string name="nav_history">History</string>
+    <string name="nav_guide">Fare Guide</string>
+    <string name="header_journey">Live Journey Tracking</string>
+    <string name="header_history">Journey History Log</string>
+    <string name="header_guide">Standard Bus Fare Guide</string>
+    
+    <string name="btn_start">Start Journey</string>
+    <string name="btn_stop">Stop Journey</string>
+    <string name="btn_select_route">Select Route</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    
+    <string name="lbl_from">From</string>
+    <string name="lbl_to">To</string>
+    <string name="lbl_distance">Distance</string>
+    <string name="lbl_speed">Current Speed</string>
+    <string name="lbl_estimated_fare">Estimated Fare</string>
+    <string name="lbl_duration">Duration</string>
+    <string name="lbl_status">Status</string>
+    <string name="lbl_accuracy">Accuracy</string>
+    
+    <string name="status_idle">Not Travelling. Ready to check-in.</string>
+    <string name="status_tracking">Active. Tracking travel coordinates.</string>
+    <string name="status_finished">Session finished. Total fare calculated.</string>
+    
+    <string name="err_no_gps">GPS coordinates unavailable. Ensure Location permission is granted.</string>
+    <string name="toast_saved">Journey logged successfully!</string>
+    <string name="no_history">No previous journeys found. Start a travel to log information.</string>
+</resources>

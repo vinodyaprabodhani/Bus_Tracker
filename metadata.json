@@ -1,0 +1,6 @@
+{
+  "name": "SLTB Smart Go",
+  "description": "Auto-detect and calculate bus fares using real-time GPS data, tracking options, and local offline maps in Sinhala & English.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

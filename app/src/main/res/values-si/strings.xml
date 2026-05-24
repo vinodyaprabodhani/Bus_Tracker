@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">ලං.ග.ම. Smart Go</string>
+    <string name="nav_journey">ගමනාගමනය</string>
+    <string name="nav_history">ඉතිහාසය</string>
+    <string name="nav_guide">ගාස්තු ලේඛනය</string>
+    <string name="header_journey">සජීවී ගමන් ලුහුබැඳීම</string>
+    <string name="header_history">පසුගිය ගමන් වාර්තා</string>
+    <string name="header_guide">සම්මත බස් ගාස්තු විස්තර</string>
+    
+    <string name="btn_start">ගමන අරඹන්න</string>
+    <string name="btn_stop">ගමන අවසන් කරන්න</string>
+    <string name="btn_select_route">මාර්ගය තෝරන්න</string>
+    <string name="btn_cancel">අවලංගු කරන්න</string>
+    <string name="btn_save">සුරකින්න</string>
+    
+    <string name="lbl_from">ආරම්භය</string>
+    <string name="lbl_to">ගමනාන්තය</string>
+    <string name="lbl_distance">දුර ප්රමාණය</string>
+    <string name="lbl_speed">වත්මන් වේගය</string>
+    <string name="lbl_estimated_fare">ඇස්තමේන්තුගත ගාස්තුව</string>
+    <string name="lbl_duration">ගතවූ කාලය</string>
+    <string name="lbl_status">තත්ත්‍වය</string>
+    <string name="lbl_accuracy">නිරවද්‍යතාවය</string>
+    
+    <string name="status_idle">ගමනක් ආරම්භ කර නොමැත. ඇතුල් වීමට සූදානම්.</string>
+    <string name="status_tracking">සක්‍රීයයි. ඛණ්ඩාංක ලුහුබඳිමින් පවතී.</string>
+    <string name="status_finished">ගමන අවසන්. සම්පූර්ණ ගාස්තුව ගණනය කර ඇත.</string>
+    
+    <string name="err_no_gps">GPS ඛණ්ඩාංක ලබාගත නොහැක. ස්ථාන අවසර ලබා දී ඇති බව තහවුරු කරන්න.</string>
+    <string name="toast_saved">ගමන් තොරතුරු සුරකින ලදී!</string>
+    <string name="no_history">පසුගිය ගමන් කිසිවක් හමු නොවීය. ගමන් තොරතුරු සුරැකීමට ගමනක් අරඹන්න.</string>
+</resources>
